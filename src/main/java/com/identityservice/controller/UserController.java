@@ -3,9 +3,7 @@ package com.identityservice.controller;
 import com.identityservice.dto.request.user.UserCreateRequest;
 import com.identityservice.dto.request.user.UserUpdateRequest;
 import com.identityservice.dto.response.ApiResponse;
-import com.identityservice.dto.response.user.UserCreateResponse;
 import com.identityservice.dto.response.user.UserInfoResponse;
-import com.identityservice.entity.User;
 import com.identityservice.mapper.UserMapper;
 import com.identityservice.service.UserService;
 import jakarta.validation.Valid;
@@ -40,10 +38,10 @@ public class UserController {
      * @return standardized API response containing created user info
      */
     @PostMapping
-    public ApiResponse<UserCreateResponse> create(@RequestBody @Valid UserCreateRequest request) {
-        User user = userMapper.toUser(request);
-        return ApiResponse.<UserCreateResponse>builder()
-                .result(userMapper.toUserCreateResponse(userService.create(user)))
+    public ApiResponse<UserInfoResponse> create(@RequestBody @Valid UserCreateRequest request) {
+
+        return ApiResponse.<UserInfoResponse>builder()
+                .result(userService.create(request))
                 .build();
     }
 
@@ -58,13 +56,9 @@ public class UserController {
      */
     @GetMapping
     public ApiResponse<List<UserInfoResponse>> getAll() {
-        List<UserInfoResponse> users = userService.getAll()
-                .stream()
-                .map(userMapper::toUserInfoResponse)
-                .toList();
 
         return ApiResponse.<List<UserInfoResponse>>builder()
-                .result(users)
+                .result(userService.getAll())
                 .build();
     }
 
@@ -81,7 +75,7 @@ public class UserController {
      */
     @GetMapping("/{username}")
     public ApiResponse<UserInfoResponse> getUser(@PathVariable String username) {
-        UserInfoResponse userInfo = userMapper.toUserInfoResponse(userService.getUserInfo(username));
+        
         return ApiResponse.<UserInfoResponse>builder()
                 .result(userMapper.toUserInfoResponse(userService.getUserInfo(username)))
                 .build();
@@ -101,10 +95,10 @@ public class UserController {
      * @return standardized API response containing updated user info
      */
     @PutMapping("/{username}")
-    public ApiResponse<Void> update(@PathVariable String username, @RequestBody @Valid UserUpdateRequest updateData) {
-        User userData = userMapper.toUser(updateData);
-        return ApiResponse.<Void>builder()
-                .result(userService.update(username, userData))
+    public ApiResponse<UserInfoResponse> update(@PathVariable String username, @RequestBody @Valid UserUpdateRequest updateData) {
+
+        return ApiResponse.<UserInfoResponse>builder()
+                .result(userService.update(username, updateData))
                 .build();
     }
 
@@ -121,8 +115,10 @@ public class UserController {
      */
     @DeleteMapping("/{username}")
     public ApiResponse<Void> deleteUser(@PathVariable String username) {
+
+        userService.delete(username);
+
         return ApiResponse.<Void>builder()
-                .result(userService.delete(username))
                 .build();
     }
 }

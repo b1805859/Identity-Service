@@ -16,7 +16,7 @@ public enum ErrorCode {
 
     // ---- 2. User-related ----
     USER_NOT_FOUND(2001, "User not found"),
-    USER_ALREADY_EXISTS(2002, "User already exists"),
+    USER_EXISTED(2002, "User already exists"),
     INVALID_USER_CREDENTIALS(2003, "Invalid username or password"),
 
     // ---- 3. Auth-related ----
@@ -29,14 +29,14 @@ public enum ErrorCode {
 
     // ---- 5. Role-related ----
     ROLE_NOT_FOUND(5001, "Role not found"),
-    ROLE_ALREADY_EXISTS(5002, "Role already exists"),
+    ROLE_EXISTED(5002, "Role already exists"),
     ROLE_ASSIGNMENT_FAILED(5003, "Failed to assign role to user"),
     ROLE_REMOVAL_FAILED(5004, "Failed to remove role from user"),
     ROLE_ACCESS_DENIED(5005, "User does not have the required role"),
 
     // ---- 6. Permission-related ----
     PERMISSION_NOT_FOUND(6001, "Permission not found"),
-    PERMISSION_ALREADY_EXISTS(6002, "Permission already exists"),
+    PERMISSION_EXISTED(6002, "Permission already exists"),
     PERMISSION_ASSIGNMENT_FAILED(6003, "Failed to assign permission to role"),
     PERMISSION_REMOVAL_FAILED(6004, "Failed to remove permission from role"),
     PERMISSION_ACCESS_DENIED(6005, "User does not have the required permission");

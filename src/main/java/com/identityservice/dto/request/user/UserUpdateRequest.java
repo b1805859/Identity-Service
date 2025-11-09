@@ -20,5 +20,4 @@ public class UserUpdateRequest {
     @NotBlank(message = "{User.lastname.notBlank}")
     @Size(max = 25, message = "{User.lastname.size}")
     private String lastname;
-
 }

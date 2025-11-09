@@ -2,14 +2,22 @@ package com.identityservice.service;
 
 import com.identityservice.common.exception.AppException;
 import com.identityservice.common.exception.ErrorCode;
+import com.identityservice.constant.PredefinedRole;
+import com.identityservice.dto.request.user.UserCreateRequest;
+import com.identityservice.dto.request.user.UserUpdateRequest;
+import com.identityservice.dto.response.user.UserInfoResponse;
+import com.identityservice.entity.Role;
 import com.identityservice.entity.User;
 import com.identityservice.mapper.UserMapper;
+import com.identityservice.repository.RoleRepository;
 import com.identityservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -18,110 +26,99 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    // private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     /**
      * Creates a new user if the username does not already exist.
+     * The user is automatically assigned the default {@link PredefinedRole#USER_ROLE}.
      *
-     * @param request user data to be created
-     * @return the created {@link User} entity
-     * @throws AppException if the username already exists or a database error occurs
+     * @param request User data to be created, including username and password.
+     * @return The created user's information as a {@link UserInfoResponse} DTO.
+     * @throws AppException if the username already exists (ErrorCode.USER_EXISTED).
      */
     @Transactional
-    public User create(User request) {
+    public UserInfoResponse create(UserCreateRequest request) {
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new AppException(ErrorCode.USER_ALREADY_EXISTS);
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        //   request.setPassword(passwordEncoder.encode(request.getPassword()));
-        request.setCreateAt(new Date());
-        request.setUdpateAt(new Date());
+        User user = userMapper.toUser(request);
 
-        try {
-            return userRepository.save(request);
-        } catch (Exception ex) {
-            throw new AppException(ErrorCode.DATABASE_ERROR);
-        }
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        HashSet<Role> roles = new HashSet<>();
+
+        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
+
+        user.setRoles(roles);
+        user.setCreateAt(new Date());
+        user.setUdpateAt(new Date());
+
+        user = userRepository.save(user);
+
+        return userMapper.toUserInfoResponse(user);
     }
 
     /**
      * Retrieves all users from the database.
      *
-     * @return list of {@link User} entities
-     * @throws AppException if a database access error occurs
+     * @return A list of {@link UserInfoResponse} DTOs.
+     * An empty list is returned if no users are found.
      */
-    public List<User> getAll() {
-        try {
-            return userRepository.findAll();
-        } catch (Exception ex) {
-            throw new AppException(ErrorCode.DATABASE_ERROR);
-        }
+    public List<UserInfoResponse> getAll() {
+
+        List<User> users = userRepository.findAll();
+
+        return userMapper.toUsersInfoResponse(users);
     }
 
     /**
      * Retrieves user information by username.
      *
-     * @param username the username to search for
-     * @return the found {@link User} entity
-     * @throws AppException if the user is not found or a database error occurs
+     * @param username The username to search for.
+     * @return The found {@link User} entity.
+     * @throws AppException if the user is not found (ErrorCode.USER_NOT_FOUND).
      */
     public User getUserInfo(String username) {
-        try {
-            return userRepository.findByUsername(username)
-                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        } catch (AppException ex) {
-            throw ex; // Re-throw known application exceptions
-        } catch (Exception ex) {
-            throw new AppException(ErrorCode.DATABASE_ERROR);
-        }
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     /**
-     * Updates existing user information.
+     * Updates existing user information based on the username.
      *
-     * @param username   the username of the user to update
-     * @param updateData new user information
-     * @return the updated {@link User} entity
-     * @throws AppException if the user is not found or a database error occurs
+     * @param username The username of the user to update.
+     * @param updateData New user information to apply.
+     * @throws AppException if the user is not found (ErrorCode.USER_NOT_FOUND).
      */
     @Transactional
-    public Void update(String username, User updateData) {
+    public UserInfoResponse update(String username, UserUpdateRequest updateData) {
 
-        User existingUser = userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        try {
 
-            userMapper.toUser(existingUser, updateData);
-            existingUser.setUdpateAt(new Date());
+        userMapper.toUser(user, updateData);
+        user.setUdpateAt(new Date());
 
-            userRepository.save(existingUser);
-        } catch (AppException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new AppException(ErrorCode.DATABASE_ERROR);
-        }
-        return null;
+        userRepository.save(user);
+
+        return userMapper.toUserInfoResponse(user);
     }
 
     /**
      * Deletes a user by username.
      *
-     * @param username the username of the user to delete
-     * @throws AppException if the user does not exist or a database error occurs
+     * @param username The username of the user to delete.
+     * @throws AppException if the user does not exist (ErrorCode.USER_NOT_FOUND).
      */
     @Transactional
-    public Void delete(String username) {
-        if (!userRepository.existsByUsername(username)) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
-        }
+    public void delete(String username) {
 
-        try {
-            userRepository.deleteByUsername(username);
-        } catch (Exception ex) {
-            throw new AppException(ErrorCode.DATABASE_ERROR);
-        }
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        return null;
+        userRepository.delete(user);
     }
 }
