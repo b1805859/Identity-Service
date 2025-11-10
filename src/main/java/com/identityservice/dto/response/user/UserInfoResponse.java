@@ -1,27 +1,26 @@
 package com.identityservice.dto.response.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-
 import java.time.LocalDate;
+import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInfoResponse {
 
-    private LocalDate dob;
+  private LocalDate dob;
 
-    private String firstname;
+  private String firstname;
 
-    private String lastname;
+  private String lastname;
 
-    private String password;
+  private String password;
 
-    private String username;
+  private String username;
 
-    private Integer version;
+  private Integer version;
 
-    private String firstName;
+  private String firstName;
 
-    private String lastName;
+  private String lastName;
 }

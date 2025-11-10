@@ -11,11 +11,10 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
 
-    void toRole(@MappingTarget Role role, Role updateData);
+  void toRole(@MappingTarget Role role, RoleUpdateRequest updateData);
 
-    Role toRole(RoleCreateRequest request);
+  Role toRole(RoleCreateRequest request);
 
-    RoleResponse toRoleResponse(Role role);
+  RoleResponse toRoleResponse(Role role);
 
-    Role toRole(RoleUpdateRequest request);
 }

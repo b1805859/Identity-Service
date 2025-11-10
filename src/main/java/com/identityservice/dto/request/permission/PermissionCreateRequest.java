@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class PermissionCreateRequest {
 
-    @NotBlank(message = "{Permission.name.notBlank}")
-    @Size(max = 25, message = "{Permission.name.size}")
-    private String name;
+  @NotBlank(message = "{Permission.name.notBlank}")
+  @Size(max = 25, message = "{Permission.name.size}")
+  private String name;
 
-    @Size(max = 50, message = "{Permission.description.size}")
-    private String description;
+  @Size(max = 50, message = "{Permission.description.size}")
+  private String description;
 }

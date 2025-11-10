@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class RoleUpdateRequest {
 
-    @NotBlank(message = "{Role.name.notBlank}")
-    @Size(max = 25, message = "{Role.name.size}")
-    private String name;
+  @NotBlank(message = "{Role.name.notBlank}")
+  @Size(max = 25, message = "{Role.name.size}")
+  private String name;
 
-    @Size(max = 50, message = "{Role.description.size}")
-    private String description;
+  @Size(max = 50, message = "{Role.description.size}")
+  private String description;
 }

@@ -6,11 +6,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -18,14 +17,14 @@ import java.util.Set;
 @Entity
 public class Role {
 
-    @Id
-    @NotBlank(message = "{Role.name.notBlank}")
-    @Size(max = 25, message = "{Role.name.size}")
-    private String name;
+  @Id
+  @NotBlank(message = "{Role.name.notBlank}")
+  @Size(max = 25, message = "{Role.name.size}")
+  private String name;
 
-    @Size(max = 50, message = "{Role.description.size}")
-    private String description;
+  @Size(max = 50, message = "{Role.description.size}")
+  private String description;
 
-    @ManyToMany
-    private Set<Permission> permissions;
+  @ManyToMany
+  private Set<Permission> permissions;
 }
