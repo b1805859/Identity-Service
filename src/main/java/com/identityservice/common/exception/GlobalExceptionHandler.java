@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
   /**
-   * Handle unexpected RuntimeExceptions (uncaught system errors).
+   * Handle unexpected RuntimeExceptions (uncaught system errors). (new)
    *
    * @param ex the exception thrown
    * @return standardized API error response
